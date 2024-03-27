@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import StarRating from "./starRating";
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -209,6 +209,7 @@ function MovieList({ movies, onSelectMovie }) {
 }
 function MoviesDetail({ selectedId, onSelectClose }) {
   const [movie, setMovie] = useState({});
+  const [loading, setLoading] = useState(false);
   const {
     Title: title,
     Year: year,
@@ -226,21 +227,25 @@ function MoviesDetail({ selectedId, onSelectClose }) {
   useEffect(
     function () {
       async function getMovieDetail() {
+        setLoading(true);
         const res = await fetch(
           `https://www.omdbapi.com/?apikey=${Key}&i=${selectedId}`
         );
         const data = await res.json();
         setMovie(data);
+        setLoading(false);
       }
       getMovieDetail();
     },
-    [setMovie]
+    [selectedId]
   );
   return (
     <div className="details">
+      {loading ? <Loader/> :
+      <>
       <header>
         <button className="btn-back" onClick={onSelectClose}>
-          &larr;
+          ❌
         </button>
         <img src={poster} alt={`poster of ${movie} movie`} />
         <div className="details-overview">
@@ -256,12 +261,15 @@ function MoviesDetail({ selectedId, onSelectClose }) {
         </div>
       </header>
       <section>
+        <div className="rating">
+          <StarRating size={24} maxRating={10} />
+        </div>
         <p>
           <em>{plot}</em>
         </p>
         <p>Starring {actors}</p>
         <p>Direct By {director}</p>
-      </section>
+      </section></>}
     </div>
   );
 }
