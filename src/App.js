@@ -104,6 +104,7 @@ export default function App() {
         setMovies([]);
         return;
       }
+handleCloseMovies()
       fetchMovie();
       return function () {
         controller.abort();
@@ -267,12 +268,17 @@ function MoviesDetail({
   )?.userRating;
   useEffect(
     function () {
-      document.addEventListener("keydown", function (e) {
+      function callBack(e) {
         if (e.code === "Escape") {
           onSelectClose();
         }
-        console.log("close escape");
-      });
+      }
+
+      document.addEventListener("keydown", callBack);
+
+      return function () {
+        document.removeEventListener("keydown", callBack);
+      };
     },
     [onSelectClose]
   );
