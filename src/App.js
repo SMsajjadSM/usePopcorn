@@ -70,14 +70,17 @@ export default function App() {
   function handleDeleteMovie(id) {
     setWatched((movie) => movie.filter((movie) => movie.imdbId !== id));
   }
+
   useEffect(
     function () {
+      const controller = new AbortController();
       async function fetchMovie() {
         try {
           setError("");
           setIsLoading(true);
           const res = await fetch(
-            `https://www.omdbapi.com/?apikey=${Key}&s=${query}`
+            `https://www.omdbapi.com/?apikey=${Key}&s=${query}`,
+            { signal: controller.signal }
           );
           if (!res.ok)
             throw new Error("Something Went Wrong with Fetching Movie");
@@ -87,8 +90,11 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not Found ");
 
           setMovies(data.Search);
+          setError("");
         } catch (err) {
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -99,6 +105,9 @@ export default function App() {
         return;
       }
       fetchMovie();
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -239,7 +248,6 @@ function MoviesDetail({
     Genre: genre,
   } = movie;
   const isWatched = watched.map((movie) => movie.imdbId).includes(selectedId);
-  console.log(isWatched);
   function handleAdd() {
     const AddNewWatchMovie = {
       imdbId: selectedId,
@@ -259,6 +267,17 @@ function MoviesDetail({
   )?.userRating;
   useEffect(
     function () {
+      document.addEventListener("keydown", function (e) {
+        if (e.code === "Escape") {
+          onSelectClose();
+        }
+        console.log("close escape");
+      });
+    },
+    [onSelectClose]
+  );
+  useEffect(
+    function () {
       async function getMovieDetail() {
         setLoading(true);
         const res = await fetch(
@@ -271,6 +290,16 @@ function MoviesDetail({
       getMovieDetail();
     },
     [selectedId]
+  );
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+      return function () {
+        document.title = "usePopcrn";
+      };
+    },
+    [title]
   );
   return (
     <div className="details">
@@ -343,7 +372,7 @@ function Summary({ watched }) {
         </p>
         <p>
           <span>🌟</span>
-          <span>{avgImdbRating.toFixed(2)}</span>
+          <span>{avgUserRating.toFixed(2)}</span>
         </p>
         <p>
           <span>⏳</span>
