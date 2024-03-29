@@ -194,8 +194,16 @@ function Logo() {
 function Search({ setQuery, query }) {
   const inputEl = useRef(null);
   useEffect(function () {
-    inputEl.current.focus();
-  });
+    function callBack(e) {
+      if (document.activeElement === inputEl.current) return;
+      if (e.code === "Enter") {
+        inputEl.current.focus();
+        setQuery("");
+      }
+    }
+    document.addEventListener("keydown  ", callBack);
+    return document.addEventListener("keydown", callBack);
+  }, [setQuery]);
   return (
     <input
       className="search"
