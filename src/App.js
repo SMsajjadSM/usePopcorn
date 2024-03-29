@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./starRating";
 const tempMovieData = [
   {
@@ -54,10 +54,14 @@ const Key = "4465e1bc";
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  // const [watched,setWatched]=useState([])
+  const [watched, setWatched] = useState(function () {
+    const storeMovie = localStorage.getItem("watched");
+    return JSON.parse(storeMovie) || [];
+  });
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
   }
@@ -70,7 +74,12 @@ export default function App() {
   function handleDeleteMovie(id) {
     setWatched((movie) => movie.filter((movie) => movie.imdbId !== id));
   }
-
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
   useEffect(
     function () {
       const controller = new AbortController();
@@ -104,7 +113,7 @@ export default function App() {
         setMovies([]);
         return;
       }
-handleCloseMovies()
+      handleCloseMovies();
       fetchMovie();
       return function () {
         controller.abort();
@@ -183,6 +192,10 @@ function Logo() {
   );
 }
 function Search({ setQuery, query }) {
+  const inputEl = useRef(null);
+  useEffect(function () {
+    inputEl.current.focus();
+  });
   return (
     <input
       className="search"
@@ -190,6 +203,7 @@ function Search({ setQuery, query }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
