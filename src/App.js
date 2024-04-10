@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./starRating";
 import { useLocalStorageState as localStorage } from "./useLocalStorageState.js";
+import { useKey } from "./useKey.js";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -140,20 +141,27 @@ function Logo() {
 }
 function Search({ setQuery, query }) {
   const inputEl = useRef(null);
-  useEffect(
-    function () {
-      function callBack(e) {
-        if (document.activeElement === inputEl.current) return;
-        if (e.code === "Enter") {
-          inputEl.current.focus();
-          setQuery("");
-        }
-      }
-      document.addEventListener("keydown  ", callBack);
-      return document.addEventListener("keydown", callBack);
-    },
-    [setQuery]
-  );
+
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+  });
+
+  // useEffect(
+  //   function () {
+  //     function callBack(e) {
+  //       if (document.activeElement === inputEl.current) return;
+  //       if (e.code === "Enter") {
+  //         inputEl.current.focus();
+  //         setQuery("");
+  //       }
+  //     }
+  //     document.addEventListener("keydown  ", callBack);
+  //     return document.addEventListener("keydown", callBack);
+  //   },
+  //   [setQuery]
+  // );
   return (
     <input
       className="search"
@@ -238,22 +246,9 @@ function MoviesDetail({
   const ratingWatchMovie = watched.find(
     (movie) => movie.imdbId === selectedId
   )?.userRating;
-  useEffect(
-    function () {
-      function callBack(e) {
-        if (e.code === "Escape") {
-          onSelectClose();
-        }
-      }
 
-      document.addEventListener("keydown", callBack);
+  useKey("Escape", onSelectClose);
 
-      return function () {
-        document.removeEventListener("keydown", callBack);
-      };
-    },
-    [onSelectClose]
-  );
   useEffect(
     function () {
       async function getMovieDetail() {
