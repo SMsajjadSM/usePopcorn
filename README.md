@@ -1,8 +1,31 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# usePopcorn website
 
-Currently, two official plugins are available:
+[Demo of usePopcorn](https://smsajjadsm.github.io/usePopcorn/)
+===
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+
+## Installation
+
+
+First clone project ...
+
+```sh
+https://github.com/SMsajjadSM/usePopcorn.git
+```
+
+Install the dependencies and devDependencies
+
+```sh
+npm i
+```
+
+
+#### How to support?
+ If you enjoyed and used this post,
+I would appreciate it if you could
+support me by giving me a ⭐
+
+[SMsajjadSM](https://github.com/SMsajjadSM/usePopcorn)
+
